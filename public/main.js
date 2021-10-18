@@ -337,7 +337,9 @@ function check(){
     vehicle.applyEngineForce(-engineForce, 2);
     vehicle.applyEngineForce(-engineForce, 3);
     if(chassisBody.angularVelocity.x >= -3){
-    chassisBody.localAngularVelocity.x-=0.1;}
+    //chassisBody.localAngularVelocity.x-=0.1;
+    //chassisBody.angularVelocity = new CANNON.Vec3.forward * 1.0;
+    console.log(chassisBody)}
     //chassisBody.rotation.velocity.y+=0.5;
     
     //chassisBody.addLocalForce(engineForce, new CANNON.Vec3(chassisBody.position.x, chassisBody.position.y -5, chassisBody.position.z));
@@ -454,16 +456,26 @@ world.addContactMaterial(wheelGroundContactMaterial);
 // car physics body
 
 var xlength = 0.5, ylength = 0.15, zlength = 1.2;
-var chassisShape = new CANNON.Box(new CANNON.Vec3(xlength, ylength, zlength));
+var chassisShapeBottom = new CANNON.Box(new CANNON.Vec3(xlength, ylength, zlength));
+var chassisShapeTop = new CANNON.Box(new CANNON.Vec3(0.5, 0.25, 0.8));
+var offset = new CANNON.Vec3(0,0.20,-0.3);
+//chassisShapeTop.position.set(0,1,0);
 var chassisBody = new CANNON.Body({mass: 500});
-chassisBody.addShape(chassisShape);
+chassisBody.addShape(chassisShapeBottom);
+chassisBody.addShape(chassisShapeTop, offset);
 chassisBody.position.set(0, 3, 0);
 chassisBody.angularVelocity.set(0, 0, 0); // initial velocity
 chassisBody.name = "chassisBody";
-// car visual body
-var geometry = new THREE.BoxGeometry(xlength*2, ylength*2, zlength*2); // double chasis shape
+// car visual bod
+var geometry = new THREE.BoxGeometry(xlength*2, ylength*2, zlength*2); 
+
 var material = new THREE.MeshBasicMaterial({color: 0xffff00, side: THREE.DoubleSide});
 var box = new THREE.Mesh(geometry, material);
+
+//now make the top visule part of the hitbox
+var geometry = new THREE.BoxGeometry(1, 0.5, 1.6); // double chasis shape
+// double chasis shape
+var boxTop = new THREE.Mesh(geometry, material);
 
 
 
@@ -482,16 +494,21 @@ loader.load(
 	// called when the resource is loaded
 	function ( gltf ) {
     box.material.visible = false;
+    boxTop.material.visible = false;
     params.hitbox = false;
    // updategui();
     ///box.position.y = 0.15;
     gltf.scene.rotation.y = Math.PI / 2;
     gltf.scene.position.y = -0.50;
+
+    gltf.scene.name = "GLTF";
 		box.add( gltf.scene );
+    makegui();
 		// Object
-  
 	});
 scene.add(box);
+scene.add(boxTop);
+
 
 
 
@@ -666,6 +683,8 @@ function updatePhysics() {
   // update the chassis position
   box.position.copy(chassisBody.position);
   box.quaternion.copy(chassisBody.quaternion);
+  boxTop.position.set(chassisBody.position.x,chassisBody.position.y + 0.2,chassisBody.position.z -0.3);
+  boxTop.quaternion.copy(chassisBody.quaternion);
   parent.position.copy(sphereBody.position);
   parent.quaternion.copy(sphereBody.quaternion);
   ///parent.quaternion.set(sphereBody.quaternion.x, sphereBody.quaternion.y, sphereBody.quaternion.z, sphereBody.quaternion.w );
@@ -795,6 +814,7 @@ console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "availabl
 var params = {
                 modelcolor: 0xff0000,  //RED
                 hitbox:true,
+                modelvisible:true
             };
 
 
@@ -806,8 +826,14 @@ var folder = gui.addFolder( 'Developer' );
                 .name('Developer')
                 .listen()
                 .onChange( function() { materialmodel.MeshPhongMaterial.color.set( params.modelcolor); } );     */
+function makegui(){
 folder.add(params, "hitbox")
 .name('Hitboxes')
 .listen()
-.onChange(function(){box.material.visible = params.hitbox;});
+.onChange(function(){box.material.visible = params.hitbox;boxTop.material.visible = params.hitbox;});
             folder.open();
+folder.add(params, "modelvisible")
+.name('Model is Visible')
+.listen()
+.onChange(function(){box.children[0].visible = params.modelvisible;});
+            folder.open();}
