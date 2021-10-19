@@ -337,8 +337,12 @@ function check(){
     vehicle.applyEngineForce(-engineForce, 2);
     vehicle.applyEngineForce(-engineForce, 3);
     if(chassisBody.angularVelocity.x >= -3){
-    //chassisBody.localAngularVelocity.x-=0.1;
+    //chassisBody.angularVelocity.x-=0.1;
+    
+    var localVelocity = new CANNON.Vec3(-0, 0, 0);
+chassisBody.quaternion.vmult(localVelocity, chassisBody.angularVelocity.x);
     //chassisBody.angularVelocity = new CANNON.Vec3.forward * 1.0;
+    
     console.log(chassisBody)}
     //chassisBody.rotation.velocity.y+=0.5;
     
@@ -348,7 +352,8 @@ function check(){
     vehicle.applyEngineForce(engineForce, 2);
     vehicle.applyEngineForce(engineForce, 3);
     if(chassisBody.angularVelocity.x <= 3){
-    chassisBody.angularVelocity.x+=0.1;}
+    var localVelocity = new CANNON.Vec3(0, 0, 0);
+chassisBody.quaternion.vmult(localVelocity, chassisBody.angularVelocity.x);}
   }
   else if(handBrake){
     vehicle.applyEngineForce(0, 2);
