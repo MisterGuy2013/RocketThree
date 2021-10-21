@@ -240,7 +240,7 @@ var handBrake = false;
 var reset = false;
 var jump = false;
 var jumptest = false;
-
+var boost = false;
 
 
 
@@ -281,6 +281,9 @@ function keyDownHandler(event) {
     if(event.keyCode == 79) {
         opressed = true;
     }
+    if(event.keyCode == 16) {
+        boost = true;
+    }
 }
 function keyUpHandler(event) {
     if(event.keyCode == 68) {
@@ -308,8 +311,8 @@ function keyUpHandler(event) {
     if(event.keyCode == 79) {
         opressed = false;
     }
-    if(event.keyCode == 79) {
-        opressed = false;
+    if(event.keyCode == 16) {
+        boost = false;
     }
 }
 var engineForce = 3000,
@@ -320,6 +323,7 @@ if(isMobile){
 
 var drift = false
 function check(){
+  var pitchSpeed = 0, rollSpeed = 0, yawSpeed = 0;
       vehicle.setBrake(0, 0);
 			vehicle.setBrake(0, 1);
 			vehicle.setBrake(0, 2);
@@ -328,7 +332,7 @@ function check(){
 
         if(jumptest == true){
           chassisBody.velocity.y = 5;   
-               console.log("jump")
+               console.log("jump");
           jumptest=false;
         }
       }
@@ -336,14 +340,10 @@ function check(){
     
     vehicle.applyEngineForce(-engineForce, 2);
     vehicle.applyEngineForce(-engineForce, 3);
-    if(chassisBody.angularVelocity.x >= -3){
-    //chassisBody.angularVelocity.x-=0.1;
-    
-    var localVelocity = new CANNON.Vec3(-0, 0, 0);
-chassisBody.quaternion.vmult(localVelocity, chassisBody.angularVelocity.x);
+    pitchSpeed = 1;
     //chassisBody.angularVelocity = new CANNON.Vec3.forward * 1.0;
     
-    console.log(chassisBody)}
+    console.log(chassisBody)
     //chassisBody.rotation.velocity.y+=0.5;
     
     //chassisBody.addLocalForce(engineForce, new CANNON.Vec3(chassisBody.position.x, chassisBody.position.y -5, chassisBody.position.z));
@@ -351,9 +351,7 @@ chassisBody.quaternion.vmult(localVelocity, chassisBody.angularVelocity.x);
   else if(downPressed){
     vehicle.applyEngineForce(engineForce, 2);
     vehicle.applyEngineForce(engineForce, 3);
-    if(chassisBody.angularVelocity.x <= 3){
-    var localVelocity = new CANNON.Vec3(0, 0, 0);
-chassisBody.quaternion.vmult(localVelocity, chassisBody.angularVelocity.x);}
+    pitchSpeed = -1;
   }
   else if(handBrake){
     vehicle.applyEngineForce(0, 2);
@@ -372,12 +370,12 @@ chassisBody.quaternion.vmult(localVelocity, chassisBody.angularVelocity.x);}
 			vehicle.setBrake(brakeF, 3);
   }
   if(leftPressed){
-    chassisBody.angularVelocity.y += 0.25;
+    yawSpeed = 2;
       vehicle.setSteeringValue(maxSteerVal, 2);
       vehicle.setSteeringValue(maxSteerVal, 3);
   }
   else if(rightPressed){
-    chassisBody.angularVelocity.y -= 0.25;
+    yawSpeed = -2;
       vehicle.setSteeringValue( -maxSteerVal, 2);
       vehicle.setSteeringValue( -maxSteerVal, 3);
   }
@@ -407,6 +405,24 @@ chassisBody.quaternion.vmult(localVelocity, chassisBody.angularVelocity.x);}
       chassisBody.angularVelocity.set(0, 0, 0); 
       chassisBody.velocity.set(0, 0, 0); // 
       chassisBody.quaternion.setFromEuler(0, 0, 0);
+  }
+
+
+
+  if(upPressed||downPressed||rightPressed||leftPressed){
+    if(jumptest){
+      pitchSpeed = 0;
+    }
+    var directionVector = new CANNON.Vec3(-pitchSpeed, yawSpeed, rollSpeed);
+		chassisBody.quaternion.vmult(directionVector, chassisBody.angularVelocity);
+  }
+
+  if(boost && params["boost"] > 0){
+    var directionVector = new CANNON.Vec3(0,0,10);
+    var y = chassisBody.velocity.y;
+		chassisBody.quaternion.vmult(directionVector, chassisBody.velocity);
+    
+    params["boost"]-=1;
   }
 }
 
@@ -508,7 +524,7 @@ loader.load(
 
     gltf.scene.name = "GLTF";
 		box.add( gltf.scene );
-    makegui();
+    makedevgui();
 		// Object
 	});
 scene.add(box);
@@ -819,7 +835,8 @@ console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "availabl
 var params = {
                 modelcolor: 0xff0000,  //RED
                 hitbox:true,
-                modelvisible:true
+                modelvisible:true,
+                boost:32
             };
 
 
@@ -827,11 +844,12 @@ var gui = new dat.GUI({
     height : 5 * 32 - 1
 });
 var folder = gui.addFolder( 'Developer' );
+var carfolder = gui.addFolder( 'Car' );
 /*folder.addColor( params, 'modelcolor' )  
                 .name('Developer')
                 .listen()
                 .onChange( function() { materialmodel.MeshPhongMaterial.color.set( params.modelcolor); } );     */
-function makegui(){
+function makedevgui(){
 folder.add(params, "hitbox")
 .name('Hitboxes')
 .listen()
@@ -842,3 +860,12 @@ folder.add(params, "modelvisible")
 .listen()
 .onChange(function(){box.children[0].visible = params.modelvisible;});
             folder.open();}
+
+
+function makecargui(){
+carfolder.add(params, "boost").min(0).max(100)
+.name('Boost')
+.listen()
+.onChange(function(){boost});
+            carfolder.open();}
+makecargui();
