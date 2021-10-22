@@ -323,7 +323,7 @@ if(isMobile){
 
 var drift = false
 function check(){
-  var pitchSpeed = 0, rollSpeed = 0, yawSpeed = 0;
+  var pitchSpeed = 0, rollSpeed = 0, yawSpeed = 0, forwardsmove = false,  backwardsmove = false;
       vehicle.setBrake(0, 0);
 			vehicle.setBrake(0, 1);
 			vehicle.setBrake(0, 2);
@@ -337,7 +337,7 @@ function check(){
         }
       }
   if(upPressed){
-    
+    forwardsmove = true;
     vehicle.applyEngineForce(-engineForce, 2);
     vehicle.applyEngineForce(-engineForce, 3);
     pitchSpeed = 1;
@@ -349,6 +349,7 @@ function check(){
     //chassisBody.addLocalForce(engineForce, new CANNON.Vec3(chassisBody.position.x, chassisBody.position.y -5, chassisBody.position.z));
   }
   else if(downPressed){
+    backwardsmove = true;
     vehicle.applyEngineForce(engineForce, 2);
     vehicle.applyEngineForce(engineForce, 3);
     pitchSpeed = -1;
@@ -413,15 +414,32 @@ function check(){
     if(jumptest){
       pitchSpeed = 0;
     }
+    if(forwardsmove || backwardsmove){
+      if(backwardsmove){
+        yawSpeed = -yawSpeed;
+      }
+    }
+    else{
+      if(jumptest){
+      yawSpeed = 0
+      }
+    }
     var directionVector = new CANNON.Vec3(-pitchSpeed, yawSpeed, rollSpeed);
 		chassisBody.quaternion.vmult(directionVector, chassisBody.angularVelocity);
   }
+  else{
+    chassisBody.angularVelocity.x = chassisBody.angularVelocity.x / 1.1;
+    chassisBody.angularVelocity.y = chassisBody.angularVelocity.y / 1.1;
+    chassisBody.angularVelocity.z = chassisBody.angularVelocity.z / 1.1;
+    
+  }
+  
 
   if(boost && params["boost"] > 0){
     var directionVector = new CANNON.Vec3(0,0,10);
     var y = chassisBody.velocity.y;
 		chassisBody.quaternion.vmult(directionVector, chassisBody.velocity);
-    
+    chassisBody.velocity.y += y/5;
     params["boost"]-=1;
   }
 }
@@ -700,6 +718,7 @@ var forma = new CANNON.Box(new CANNON.Vec3(2,2,2));
 **/
 
 function updatePhysics() {
+  
   world.step(1/60);
   // update the chassis position
   box.position.copy(chassisBody.position);
