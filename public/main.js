@@ -208,8 +208,23 @@ var sphereBody = new CANNON.Body({
    shape: new CANNON.Sphere(radius),
    name: "test"
 });
-sphereBody.name = "sus";
+sphereBody.name = "sphere";
 world.addBody(sphereBody);
+
+var wall = new CANNON.Body({
+friction: 5,
+   restitution: 0.3,
+   contactEquationStiffness: 1e8,
+    contactEquationRelaxation: 3,
+            frictionEquationStiffness: 1e8,
+            frictionEquationRegularizationTime: 3,
+   mass: 50, // kg
+   position: new CANNON.Vec3(30, 10, 0), // m
+   shape: new CANNON.Box(new CANNON.Vec3(10,10,10)),
+   name: "Wall"
+})
+world.add(wall);
+helper.addVisual(wall, "box", "normal");
 
 
 
@@ -241,7 +256,7 @@ var reset = false;
 var jump = false;
 var jumptest = false;
 var boost = false;
-
+var mumbaidrift = false;
 
 
 
@@ -284,6 +299,9 @@ function keyDownHandler(event) {
     if(event.keyCode == 16) {
         boost = true;
     }
+    if(event.keyCode == 77) {
+        mumbaidrift = true;
+    }
 }
 function keyUpHandler(event) {
     if(event.keyCode == 68) {
@@ -313,6 +331,9 @@ function keyUpHandler(event) {
     }
     if(event.keyCode == 16) {
         boost = false;
+    }
+    if(event.keyCode == 77) {
+        mumbaidrift = false;
     }
 }
 var engineForce = 3000,
@@ -362,6 +383,16 @@ function check(){
 			vehicle.setBrake(brakeF, 2);
 			vehicle.setBrake(brakeF, 3);
   }
+  else if(boost && params["boost"] > 0){
+    vehicle.applyEngineForce(-engineForce, 2);
+    vehicle.applyEngineForce(-engineForce, 3);
+    var directionVector = new CANNON.Vec3(0,0,10);
+    var y = chassisBody.velocity.y;
+		chassisBody.quaternion.vmult(directionVector, chassisBody.velocity);
+    chassisBody.velocity.y += y/5;
+    params["boost"]-=1;
+
+  }
   else{
     vehicle.applyEngineForce(0, 2);
     vehicle.applyEngineForce(0, 3);
@@ -385,11 +416,11 @@ function check(){
       vehicle.setSteeringValue( 0, 3);
   }
   if(opressed){
-    drift = true
+    drift = true;
     ///vehicle.friction = 0.5;
     //vehicle.friction = 0.5;
-    engineForce = 1000000000
-    maxForce = 100000000
+    engineForce = 1000000000;
+    maxForce = 100000000;
     console.log("go");
     vehicle.applyEngineForce(-engineForce, 2);
     vehicle.applyEngineForce(-engineForce, 3);
@@ -398,8 +429,8 @@ function check(){
     drift = false
     //vehicle.friction = 5
     //vehicle.friction = 5
-    engineForce = 1000
-    maxForce = 4000
+    engineForce = 1000;
+    maxForce = 4000;
   }
   if(reset){
     chassisBody.position.y = 1.5;
@@ -414,7 +445,7 @@ function check(){
     if(jumptest){
       pitchSpeed = 0;
     }
-    if(forwardsmove || backwardsmove){
+    if(forwardsmove || backwardsmove || boost){
       if(backwardsmove){
         yawSpeed = -yawSpeed;
       }
@@ -424,7 +455,7 @@ function check(){
       yawSpeed = 0
       }
     }
-    var directionVector = new CANNON.Vec3(-pitchSpeed, yawSpeed, rollSpeed);
+    var directionVector = new CANNON.Vec3(pitchSpeed, yawSpeed, rollSpeed);
 		chassisBody.quaternion.vmult(directionVector, chassisBody.angularVelocity);
   }
   else{
@@ -433,17 +464,29 @@ function check(){
     chassisBody.angularVelocity.z = chassisBody.angularVelocity.z / 1.1;
     
   }
-  
-
-  if(boost && params["boost"] > 0){
-    var directionVector = new CANNON.Vec3(0,0,10);
-    var y = chassisBody.velocity.y;
-		chassisBody.quaternion.vmult(directionVector, chassisBody.velocity);
-    chassisBody.velocity.y += y/5;
-    params["boost"]-=1;
+  if(mumbaidrift){
+    chassisBody.angularVelocity.y += 5;
   }
+
+  
 }
 
+
+/*
+
+vmult other way
+
+let quat = body.quaternion;
+let up = new THREE.Vector3(0, 1, 0).applyQuaternion(quat);
+
+
+body.velocity.x += up.x * 0.15 * this.enginePower;
+			body.velocity.y += up.y * 0.15 * this.enginePower;
+			body.velocity.z += up.z * 0.15 * this.enginePower;
+
+
+
+*/
 
 
 
@@ -691,11 +734,14 @@ chassisBody.addEventListener("collide",function(e){
         if(e.body.name == "wheel" || e.body.name == "chassisBody" ){
         jumptest = true;}
         });
-        if(chassisBody.position.y <= -3.75){
+        if(chassisBody.position.y <= -3.50){
           jumptest = true;
         }
+        else if(chassisBody.position.y >= -1.75){
+          jumptest = false;
+        }
 });
-
+ 
 
 
 
