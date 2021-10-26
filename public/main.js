@@ -53,7 +53,7 @@ else{
 renderer.setSize( window.innerWidth/1.5, window.innerHeight/1.5 );}
 
 document.body.appendChild( renderer.domElement );
-
+helper.addLights(renderer);
 
 
 
@@ -143,6 +143,8 @@ parent.position.set(0,15,0);
 
 var groundMaterial = new THREE.MeshStandardMaterial( { map: groundTexture } );
 
+parent.castShadow = true;
+parent.receiveShadow = true;
 
 scene.add(parent);
 
@@ -518,9 +520,14 @@ var material = new THREE.MeshBasicMaterial({color: 0xff0000, side: THREE.DoubleS
 var plane = new THREE.Mesh(geometry, material);
 plane.rotation.x = Math.PI/2;
 
+/*
+old lights
 var sunlight = new THREE.DirectionalLight(0xffffff, 2.0);
 sunlight.position.set(-100, 100, 0);
 scene.add(sunlight)
+*/
+
+
 
 /**
 * Physics
@@ -777,7 +784,8 @@ var forma = new CANNON.Box(new CANNON.Vec3(2,2,2));
 /**
 * Main
 **/
-
+box.castShadow = true;
+box.receiveShadow = true;
 function updatePhysics() {
   
   world.step(1/60);
@@ -794,8 +802,8 @@ function updatePhysics() {
 
 clock = new THREE.Clock();
 var lastPos = new THREE.Vector3(0,0,0);
-renderer.shadowMapEnabled = true;
-renderer.shadowMapType = THREE.PCFSoftShadowMap;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 function animate() {
   helper.updateBodies(world);
   updatePhysics();

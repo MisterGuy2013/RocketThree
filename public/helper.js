@@ -15,11 +15,11 @@ class CannonHelper{
         renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
 
         // LIGHTS
-        const ambient = new THREE.AmbientLight( 0x888888 );
+        const ambient = new THREE.AmbientLight( 0xffffff );
         this.scene.add( ambient );
-
-        const light = new THREE.DirectionalLight( 0xdddddd );
-        light.position.set( 3, 10, 4 );
+var intensity = 0.75;
+        const light = new THREE.DirectionalLight( 0xffffff, intensity );
+        light.position.set(0 , 80,  0);
         light.target.position.set( 0, 0, 0 );
 
         light.castShadow = true;
@@ -105,7 +105,7 @@ class CannonHelper{
 				normals: false, // contact normals
 				axes: false, // "local" frame axes
 				particleSize: 0.1,
-				shadows: false,
+				shadows: true,
 				aabbs: false,
 				profiling: false,
 				maxSubSteps:3
