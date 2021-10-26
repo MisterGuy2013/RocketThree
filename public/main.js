@@ -218,10 +218,25 @@ friction: 5,
     contactEquationRelaxation: 3,
             frictionEquationStiffness: 1e8,
             frictionEquationRegularizationTime: 3,
-   mass: 50, // kg
-   position: new CANNON.Vec3(30, 10, 0), // m
-   shape: new CANNON.Box(new CANNON.Vec3(10,10,10)),
-   name: "Wall"
+   mass: 0, // kg
+   position: new CANNON.Vec3(50, 0, 0), // m
+   shape: new CANNON.Box(new CANNON.Vec3(10,50,100)),
+   name: "Wall1"
+})
+world.add(wall);
+helper.addVisual(wall, "box", "normal");
+
+var wall = new CANNON.Body({
+friction: 5,
+   restitution: 0.3,
+   contactEquationStiffness: 1e8,
+    contactEquationRelaxation: 3,
+            frictionEquationStiffness: 1e8,
+            frictionEquationRegularizationTime: 3,
+   mass: 0, // kg
+   position: new CANNON.Vec3(-50, 0, 0), // m
+   shape: new CANNON.Box(new CANNON.Vec3(10,50,100)),
+   name: "Wall2"
 })
 world.add(wall);
 helper.addVisual(wall, "box", "normal");
@@ -779,6 +794,8 @@ function updatePhysics() {
 
 clock = new THREE.Clock();
 var lastPos = new THREE.Vector3(0,0,0);
+renderer.shadowMapEnabled = true;
+renderer.shadowMapType = THREE.PCFSoftShadowMap;
 function animate() {
   helper.updateBodies(world);
   updatePhysics();
