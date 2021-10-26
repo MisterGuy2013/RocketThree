@@ -1,10 +1,16 @@
 var groundTexture = new THREE.TextureLoader().load( 'pic/grass.jpg' );
 groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
-groundTexture.repeat.set( 50, 50 );
+groundTexture.repeat.set( 10, 17.5 );
 groundTexture.anisotropy = 16;
 groundTexture.encoding = THREE.sRGBEncoding;
+var groundMaterial = new THREE.MeshStandardMaterial( { map: groundTexture } );
 
-
+var wallTexture = new THREE.TextureLoader().load( 'pic/brick.jpeg' );
+wallTexture.wrapS = wallTexture.wrapT = THREE.RepeatWrapping;
+wallTexture.repeat.set( 5, 5 );
+wallTexture.anisotropy = 16;
+wallTexture.encoding = THREE.sRGBEncoding;
+var wallMaterial = new THREE.MeshStandardMaterial( { map: wallTexture } );
 
 
 
@@ -85,7 +91,7 @@ const divisions = 100;
 
 
 
-var mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 1000, 1000 ), groundMaterial );
+var mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 100, 175 ), groundMaterial );
 			mesh.position.y = -4.225;
 			mesh.rotation.x = - Math.PI / 2;
 			mesh.receiveShadow = true;
@@ -213,6 +219,9 @@ var sphereBody = new CANNON.Body({
 sphereBody.name = "sphere";
 world.addBody(sphereBody);
 
+
+
+/// Making the side walls
 var wall = new CANNON.Body({
 friction: 5,
    restitution: 0.3,
@@ -226,7 +235,7 @@ friction: 5,
    name: "Wall1"
 })
 world.add(wall);
-helper.addVisual(wall, "box", "normal");
+helper.addVisual(wall, "box", wallMaterial);
 
 var wall = new CANNON.Body({
 friction: 5,
@@ -241,7 +250,42 @@ friction: 5,
    name: "Wall2"
 })
 world.add(wall);
-helper.addVisual(wall, "box", "normal");
+helper.addVisual(wall, "box", wallMaterial);
+
+
+
+///top wall
+var wall = new CANNON.Body({
+friction: 5,
+   restitution: 0.3,
+   contactEquationStiffness: 1e8,
+    contactEquationRelaxation: 3,
+            frictionEquationStiffness: 1e8,
+            frictionEquationRegularizationTime: 3,
+   mass: 0, // kg
+   position: new CANNON.Vec3(0, 0, 90), // m
+   shape: new CANNON.Box(new CANNON.Vec3(50,50,10)),
+   name: "Wall2"
+})
+world.add(wall);
+helper.addVisual(wall, "box", wallMaterial);
+//top wall 2
+var wall = new CANNON.Body({
+friction: 5,
+   restitution: 0.3,
+   contactEquationStiffness: 1e8,
+    contactEquationRelaxation: 3,
+            frictionEquationStiffness: 1e8,
+            frictionEquationRegularizationTime: 3,
+   mass: 0, // kg
+   position: new CANNON.Vec3(0, 27.5, -90), // m
+   shape: new CANNON.Box(new CANNON.Vec3(50,22.5,10)),
+   name: "Wall2"
+})
+world.add(wall);
+helper.addVisual(wall, "box", wallMaterial);
+
+
 
 
 
