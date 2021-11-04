@@ -78,7 +78,7 @@ var cube = new THREE.Mesh( geometry, material );
 
 
 
-controls = new THREE.OrbitControls (camera, document.getElementById("main"));
+
 
 
 const size = 100;
@@ -195,15 +195,27 @@ world.addBody(sphereBody);
 
 
 
+var cameraBody = new CANNON.Body({
+   friction: 5,
+   restitution: 0.3,
+   contactEquationStiffness: 1e8,
+    contactEquationRelaxation: 3,
+            frictionEquationStiffness: 1e8,
+            frictionEquationRegularizationTime: 3,
+   mass: 5, // kg
+   position: new CANNON.Vec3(15, 15, 0), // m
+   shape: new CANNON.Sphere(0.3),
+   name: "camera"
+});
+
+world.add(cameraBody);
+//helper.addVisual(cameraBody, "sphere", "normal")
 
 
 
 
 
-
-
-
-
+controls = new THREE.OrbitControls (camera, document.getElementById("main"));
 
 
 
@@ -407,7 +419,7 @@ function animate() {
     
      let diff = new THREE.Vector3().copy(box.position).sub(lastPos);
 
-    camera.position.add(diff);
+    camera.position.copy(sphereBody.position);
 
     controls.target.copy(box.position)
     controls.update();
