@@ -207,7 +207,7 @@ var cameraBody = new CANNON.Body({
    shape: new CANNON.Sphere(0.3),
    name: "camera"
 });
-
+cameraBody.collisionResponse = 0;
 world.add(cameraBody);
 //helper.addVisual(cameraBody, "sphere", "normal")
 
@@ -419,7 +419,29 @@ function animate() {
     
      let diff = new THREE.Vector3().copy(box.position).sub(lastPos);
 
-    camera.position.copy(sphereBody.position);
+     //camera time
+direction = new CANNON.Vec3();
+directionVadd = new CANNON.Vec3(0,1.5,-7aa)
+var newpos = new CANNON.Vec3(chassisBody.position.x, chassisBody.position.y, chassisBody.position.z);
+chassisBody.quaternion.vmult(directionVadd, directionVadd);
+newpos.vadd(directionVadd, newpos)
+newpos.vsub(cameraBody.position, direction);
+//direction.y = 0;
+//direction.normalize();
+
+// Get the rotation between the forward vector and the direction vector
+var forward = new CANNON.Vec3(0,0,1);
+cameraBody.quaternion.setFromVectors(forward, direction);
+
+// Multiply direction by 10 and store in body.velocity
+var fixedSpeed = 5;
+direction.mult(fixedSpeed,cameraBody.velocity);
+cameraBody.position.y
+    camera.position.copy(cameraBody.position);
+
+
+
+
 
     controls.target.copy(box.position)
     controls.update();
@@ -436,7 +458,7 @@ animate();
 
 
 
-
+// it looks cool setTimeout(function(){cameraBody.position.set(25,0,15)},2500 )
 
 
 var sense = 50;
