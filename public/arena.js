@@ -241,8 +241,7 @@ friction: 5,
 world.add(contactwall);
 contactwall.addEventListener("collide",function(e){ 
   if(e.body.name == "sphere"){
-    alert("Orange Scored!");
-    resetBall();
+        score("Blue");
   }
 });
 helper.addVisual(contactwall, "box", bluewall);
@@ -271,8 +270,7 @@ friction: 5,
 world.add(contactwall);
 contactwall.addEventListener("collide",function(e){ 
   if(e.body.name == "sphere"){
-    alert("Blue Scored!");
-    resetBall();
+    score("Orange");
   }
 });
 helper.addVisual(contactwall, "box", orangewall);

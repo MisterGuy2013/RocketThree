@@ -78,7 +78,7 @@ var cube = new THREE.Mesh( geometry, material );
 
 
 
-controls = new THREE.OrbitControls (camera, renderer.domElement);
+controls = new THREE.OrbitControls (camera, document.getElementById("main"));
 
 
 const size = 100;
@@ -252,9 +252,38 @@ scene.add(sunlight)
 
 
 
+function preloader() {
+     // counter
+     var i = 0;
+
+
+     // create object
+     imageObj = new Image();
+
+
+     // set image list
+     images = new Array();
+     images[0]="pic/Score/0-0.png"
+     images[1]="pic/Score/0-1.png"
+     images[2]="pic/Score/0-2.png"
+     images[3]="pic/Score/1-0.png"
+     images[4]="pic/Score/1-2.png"
+     images[5]="pic/Score/2-1.png"
+     images[6]="pic/Score/2-0.png"
+     images[7]="pic/Score/2-2.png"
+     images[8]="pic/Score/1-1.png"
 
 
 
+
+     // start preloading
+     for(i=0; i<=3; i++) 
+     {
+          imageObj.src=images[i];
+     }
+} 
+
+preloader();
 
 function resetBall(){
   sphereBody.position.set(0,15,0);
@@ -265,7 +294,25 @@ function resetBall(){
 
 
 
-
+function score(goal){
+  var display = document.getElementById("main");
+  if(goal == "Blue"){
+    params.orangeScore++;
+  }
+  if(goal == "Orange"){
+    params.blueScore++;
+  }
+  if(params.blueScore > 5){
+    alert("blue wins!")
+  }
+  else if(params.orangeScore > 5){
+    alert("orange wins!")
+  }
+  else{
+  display.src = "/pic/Score/" + params.blueScore + "-" + params.orangeScore + ".png";
+  }
+  resetBall();
+}
 
 
 
@@ -318,7 +365,9 @@ var forma = new CANNON.Box(new CANNON.Vec3(2,2,2));
 **/
 
 function updatePhysics() {
-  
+/*  if(chassisBody.velocity.y < 0){
+    console.log(chassisBody.velocity.y);
+  }*/
   world.step(1/60);
   // update the chassis position
   box.position.copy(chassisBody.position);
@@ -331,7 +380,7 @@ function updatePhysics() {
         if(chassisBody.position.y <= -3.50){
           jumptest = true;
         }
-        else if(chassisBody.position.y >= -1.75){
+        else if(chassisBody.position.y >= -2.75){
           jumptest = false;
         }
 
@@ -463,7 +512,9 @@ var params = {
                 modelcolor: 0xff0000,  //RED
                 hitbox:true,
                 modelvisible:true,
-                boost:32
+                boost:32,
+                blueScore:0,
+                orangeScore:0
             };
 
 

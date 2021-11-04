@@ -108,7 +108,7 @@ function keyUpHandler(event) {
     }
 }
 var engineForce = 3000,
-      maxSteerVal = 0.5, maxForce = 6000, brakeF = 30, brake = 50;
+      maxSteerVal = 0.5, maxForce = 6000, brakeF = 10, brake = 50;
 
 
 var drift = false
@@ -151,12 +151,33 @@ function check(){
 			vehicle.setBrake(brakeF, 3);
   }
   if(boost && params["boost"] > 0){
-    vehicle.applyEngineForce(-engineForce, 2);
-    vehicle.applyEngineForce(-engineForce, 3);
+    vehicle.applyEngineForce(-engineForce * 1.5, 2);
+    vehicle.applyEngineForce(-engineForce * 1.5, 3);
     var directionVector = new CANNON.Vec3(0,0,10);
     var y = chassisBody.velocity.y;
 		chassisBody.quaternion.vmult(directionVector, chassisBody.velocity);
-    chassisBody.velocity.y += y/5;
+    if(jumptest == false){
+    if(y<-0.5){
+      if(y<-9.8){
+        console.log("Yweas")
+        if(chassisBody.velocity.y <-9.8){
+
+        }
+        else{
+        chassisBody.velocity.y += -9.8;
+        }
+      }
+      else{
+    chassisBody.velocity.y += y;
+    }
+    }
+    else{
+      chassisBody.velocity.y += -5;
+    }
+    }
+    else{
+      chassisBody.velocity.y -= 1;
+    }
     params["boost"]-=1;
 
   }
