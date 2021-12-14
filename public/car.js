@@ -1,5 +1,5 @@
 
-function makeCar(){
+function makeCar(carName){
 
 
 
@@ -133,7 +133,6 @@ function check(){
     pitchSpeed = 1;
 
     
-    console.log(chassisBody)
 
   }
   else if(downPressed){
@@ -150,15 +149,30 @@ function check(){
 			vehicle.setBrake(brakeF, 2);
 			vehicle.setBrake(brakeF, 3);
   }
-  if(boost && params["boost"] > 0){
+  if(boost && gameBoost[carName] > 0){
+    var stats = document.getElementById("stats");
     vehicle.applyEngineForce(-engineForce * 1.5, 2);
     vehicle.applyEngineForce(-engineForce * 1.5, 3);
+    var localForward = new CANNON.Vec3(0,0,0.3);
+     var worldForward = new CANNON.Vec3(); 
+    chassisBody.vectorToWorldFrame(localForward, worldForward);
+    chassisBody.velocity.x += worldForward.x;
+    chassisBody.velocity.y += worldForward.y;
+    chassisBody.velocity.z += worldForward.z;
+    console.log(worldForward);
+    /*
+    chassisBody.velocity.set(box.rotation.x, box.rotation.y, box.rotation.z);
+    */
+
+    /*
     var directionVector = new CANNON.Vec3(0,0,10);
     var y = chassisBody.velocity.y;
-		chassisBody.quaternion.vmult(directionVector, chassisBody.velocity);
+		chassisBody.quaternion.vmult(directionVector, chassisBody.velocity);*/
+
+    /*
     if(jumptest == false){
-    if(y<-0.5){
-      if(y<-9.8){
+    if(chassisBody.position.y<-0.5){
+      if(chassisBody.position.y<-9.8){
         console.log("Yweas")
         if(chassisBody.velocity.y <-9.8){
 
@@ -168,7 +182,7 @@ function check(){
         }
       }
       else{
-    chassisBody.velocity.y += y;
+    chassisBody.velocity.y += chassisBody.velocity.y;
     }
     }
     else{
@@ -178,7 +192,8 @@ function check(){
     else{
       chassisBody.velocity.y -= 1;
     }
-    params["boost"]-=1;
+    */
+    gameBoost[carName]-=1;
 
   }
   else if(!boost && !downPressed && !handBrake && !upPressed){
@@ -308,7 +323,7 @@ chassisBody.addShape(chassisShapeBottom);
 chassisBody.addShape(chassisShapeTop, offset);
 chassisBody.position.set(0, 3, 0);
 chassisBody.angularVelocity.set(0, 0, 0); // initial velocity
-chassisBody.name = "chassisBody";
+chassisBody.name = carName;
 // car visual bod
 var geometry = new THREE.BoxGeometry(xlength*2, ylength*2, zlength*2); 
 

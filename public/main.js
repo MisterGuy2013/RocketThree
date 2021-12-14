@@ -1,3 +1,10 @@
+const carName = "chassisBody";
+
+const scene = new THREE.Scene();
+
+
+
+
 var groundTexture = new THREE.TextureLoader().load( 'pic/grass.jpg' );
 groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
 groundTexture.repeat.set( 10, 17.5 );
@@ -12,6 +19,24 @@ wallTexture.anisotropy = 16;
 wallTexture.encoding = THREE.sRGBEncoding;
 var wallMaterial = new THREE.MeshStandardMaterial( { map: wallTexture } );
 
+
+
+
+
+var params = {
+                modelcolor: 0xff0000,  //RED
+                hitbox:true,
+                modelvisible:true,
+                blueScore:0,
+                orangeScore:0,
+                cameraFollow:"Chase",
+                cameraLookAt:"Car"
+            };
+
+
+
+
+            
 
 
 
@@ -39,7 +64,7 @@ if( isMobile.any() ) {alert("Im sorry this only works on computer, you can try o
 
 var isMobile = isMobile.any();
 var world = new CANNON.World();
-const scene = new THREE.Scene();
+
 const camera = new THREE.PerspectiveCamera( 50, (window.innerWidth / window.innerHeight), 0.1, 1000 );
 helper = new CannonHelper(scene);
 camera.position.x = 15;
@@ -329,7 +354,7 @@ function score(goal){
 
 
 
-
+//try{
 
 var jumptest = false;
 var planeBody = undefined;
@@ -340,8 +365,13 @@ makeArena();
 var box = undefined;
 var boxTop = undefined;
 var chassisBody = undefined;
-makeCar();
+makeCar(carName);
 
+
+
+
+var gameBoost = new BOOST(scene, world, helper);
+gameBoost.addBoostResponse(carName, 32);
 
 
 
@@ -405,6 +435,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 function animate() {
   helper.updateBodies(world);
   updatePhysics();
+   var diff = new THREE.Vector3().copy(box.position).sub(lastPos);
   ///light.position.copy(camera.position);
   ///scene.add(light); 
 
@@ -416,12 +447,13 @@ function animate() {
 
     
 
+    if(params.cameraFollow == "Chase"){
     
-     let diff = new THREE.Vector3().copy(box.position).sub(lastPos);
 
      //camera time
 direction = new CANNON.Vec3();
-directionVadd = new CANNON.Vec3(0,1.5,-7aa)
+if(params.cameraFollow == "Chase"){
+directionVadd = new CANNON.Vec3(0,1.5,-7);
 var newpos = new CANNON.Vec3(chassisBody.position.x, chassisBody.position.y, chassisBody.position.z);
 chassisBody.quaternion.vmult(directionVadd, directionVadd);
 newpos.vadd(directionVadd, newpos)
@@ -436,15 +468,61 @@ cameraBody.quaternion.setFromVectors(forward, direction);
 // Multiply direction by 10 and store in body.velocity
 var fixedSpeed = 5;
 direction.mult(fixedSpeed,cameraBody.velocity);
-cameraBody.position.y
     camera.position.copy(cameraBody.position);
+}
+
+
+    if(camera.position.y <= -4.25){
+      camera.position.y = -4.15
+    }}
+    else if(params.cameraFollow == "Ball Camera"){
+  /*
+  math class finally helped, 
+  y = mx + b 
+  m = (y2-y1)/(x2-x1)
+  b = -mx + y
+  x = (y-b)/m
+  inverse: I=1/m
+  d = m*v
+  v = d/m
+  so get m and b, 
+  get 
+  */
+  var cameraDistance = 2;
+  var slope = (box.position.z-parent.position.z)/(box.position.x-parent.position.x);
+  var intercept = (-slope * box.position.x) + box.position.z;
+  var slopeInverse = 1/slope;
+  var multiplicationVar = cameraDistance/slopeInverse;
+  var x = box.position.x + multiplicationVar;
+  var z = box.position.z + slope*multiplicationVar
+  var cameraDistance = 2;
+  var slope = (box.position.z-parent.position.z)/(box.position.x-parent.position.x);
+  var intercept = (-slope * box.position.x) + box.position.z;
+  var slopeInverse = 1/slope;
+  var multiplicationVar = cameraDistance/slopeInverse;
+  var x = box.position.x + 2;
+  var z = slope*(box.position.x+2) + intercept;
+
+
+  
+  cameraBody.position.set(x, -3, z);
+  camera.position.copy(cameraBody.position);
+}
+if(params.cameraFollow == "Normal"){
+camera.position.add(diff);
+controls.update();
+}
 
 
 
-
-
+if(params.cameraLookAt == "Car"){
     controls.target.copy(box.position)
     controls.update();
+}
+else if(params.cameraLookAt == "Ball"){
+  controls.target.copy(parent.position)
+    controls.update();
+}
     lastPos.copy(box.position);
     controls.update();
 
@@ -454,7 +532,7 @@ cameraBody.position.y
 	renderer.render( scene, camera );
   lastPos = new THREE.Vector3().copy(box.position);
 }
-animate();
+
 
 
 
@@ -542,14 +620,7 @@ console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "availabl
 
 
 
-var params = {
-                modelcolor: 0xff0000,  //RED
-                hitbox:true,
-                modelvisible:true,
-                boost:32,
-                blueScore:0,
-                orangeScore:0
-            };
+
 
 
 var gui = new dat.GUI({
@@ -557,6 +628,7 @@ var gui = new dat.GUI({
 });
 var folder = gui.addFolder( 'Developer' );
 var carfolder = gui.addFolder( 'Car' );
+var camerafolder = gui.addFolder( 'Camera' );
 /*folder.addColor( params, 'modelcolor' )  
                 .name('Developer')
                 .listen()
@@ -575,9 +647,37 @@ folder.add(params, "modelvisible")
 
 
 function makecargui(){
-carfolder.add(params, "boost").min(0).max(100)
+carfolder.add(gameBoost, carName).min(0).max(100)
 .name('Boost')
 .listen()
 .onChange(function(){});
             carfolder.open();}
 makecargui();
+
+function makecameragui(){
+camerafolder.add(params, "cameraFollow", ["Chase", "Ball Camera", "Normal"])
+.name('Camera Follow Confinguration')
+.listen()
+.onChange(function(){});
+            camerafolder.open();
+}
+makecameragui();
+
+
+
+
+animate();
+
+
+
+
+
+
+
+
+
+/*
+}
+catch(err){
+  alert(err);
+}*/
