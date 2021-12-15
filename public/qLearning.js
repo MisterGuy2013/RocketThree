@@ -32,7 +32,7 @@ var QLearning = (function () {
   var discountFactor = 0.9; // Discount Factor of Future Rewards
   var randomize = 0.05; // Randomization Rate on Action
 
-  var availableActions = ['forward', 'forward-left', 'forward-right', 'backward', "nothing"];
+  var availableActions = ['up', 'down', 'left', 'right', "nothing"];
 
   var score = 0;
   var missed = 0;
@@ -57,13 +57,13 @@ var QLearning = (function () {
     while(fruitRelativePose.x < 0) fruitRelativePose.x += tileCount;
     while(fruitRelativePose.x > tileCount) fruitRelativePose.x -= tileCount;
 
-    fruitRelativePose.y = sphereBody.position.y - chassisBody.position.y;
+    fruitRelativePose.y = sphereBody.position.z - chassisBody.position.z;
     while(fruitRelativePose.y < 0) fruitRelativePose.y += tileCount;
     while(fruitRelativePose.y > tileCount) fruitRelativePose.y -= tileCount;
 
     var stateName = fruitRelativePose.x + ',' + fruitRelativePose.y;
       // + ',' + trail.length;
-
+/*
     const maxLength = (fullSetOfStates ? trail.length : 1);
     for(let index = 0; index < maxLength; index++) {
       if (trailRelativePose[index] == undefined) trailRelativePose.push({ x:0, y:0 });
@@ -77,13 +77,13 @@ var QLearning = (function () {
       while (trailRelativePose[index].y > tileCount) trailRelativePose[index].y -= tileCount;
 
       stateName += ',' + trailRelativePose[index].x + ',' + trailRelativePose[index].y;
-    }
+    }*/
     return stateName;
   };
 
   var whichTable = function (s) {
     if(qTable[s] == undefined ) {
-      qTable[s] = { 'forward':0, 'forward-left':0, 'forward-right':0 , 'backwards':0, "nothing" : 0};
+      qTable[s] = { 'up':0, 'down':0, 'left':0 , 'right':0, "nothing" : 0};
     }
     return qTable[s];
   }
@@ -124,7 +124,8 @@ var QLearning = (function () {
   }
 
   function Algorithm () {
-    requestAnimationFrame( animate );
+    //requestAnimationFrame( animate );
+     world.step(1/60);
     var currentState = whichStateNow();
     var action = bestAction(currentState);
     carAction(action);

@@ -411,7 +411,16 @@ function updatePhysics() {
 /*  if(chassisBody.velocity.y < 0){
     console.log(chassisBody.velocity.y);
   }*/
-  world.step(1/60);
+
+
+
+
+  //world.step(1/60);
+
+
+
+
+
   // update the chassis position
   box.position.copy(chassisBody.position);
   box.quaternion.copy(chassisBody.quaternion);
@@ -532,7 +541,7 @@ else if(params.cameraLookAt == "Ball"){
 
 
 
-	//requestAnimationFrame( animate );
+	requestAnimationFrame( animate );
 	
   
   

@@ -25,7 +25,7 @@ var mumbaidrift = false;
 
 
 
-
+/*
 function carAction(action){
   console.log(action);
   if(action == "forward"){
@@ -56,6 +56,27 @@ function carAction(action){
     backPressed = false;
   }
 }
+*/
+
+function carAction(action){
+  if(action == "up"){
+    chassisBody.position.x += 1;
+  }
+  else if(action == "left"){
+    chassisBody.position.z += 1;
+  }
+  else if(action == "right"){
+    chassisBody.position.z -= 1;
+  }
+   else if(action == "down"){
+    chassisBody.position.x -= 1;
+  }
+   else if(action == "nothing"){
+   
+  }
+}
+
+
 
 
 
