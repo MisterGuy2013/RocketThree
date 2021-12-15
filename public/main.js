@@ -332,6 +332,7 @@ function resetBall(){
 
 
 function score(goal){
+  chassisBody.scored=true;
   var display = document.getElementById("main");
   if(goal == "Blue"){
     params.orangeScore++;
@@ -528,8 +529,16 @@ else if(params.cameraLookAt == "Ball"){
 
 
 
-	requestAnimationFrame( animate );
-	renderer.render( scene, camera );
+
+
+
+	//requestAnimationFrame( animate );
+	
+  
+  
+  
+  
+  renderer.render( scene, camera );
   lastPos = new THREE.Vector3().copy(box.position);
 }
 

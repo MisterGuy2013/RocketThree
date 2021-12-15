@@ -1,4 +1,68 @@
 
+
+var opressed = false;
+var rightPressed = false;
+var leftPressed = false;
+var upPressed = false;
+var downPressed = false;
+var handBrake = false;
+var reset = false;
+var jump = false;
+jumptest = false;
+var boost = false;
+var mumbaidrift = false;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function carAction(action){
+  console.log(action);
+  if(action == "forward"){
+    upPressed = true;
+  }
+  else if(action == "forward-left"){
+    upPressed = true;
+    leftPressed = true;
+  }
+  else if(action == "forward-right"){
+    leftPressed = false;
+    upPressed = true;
+    rightPressed = false;
+  }
+  else if(action == "backward"){
+    backPressed = true;
+    upPressed = false;
+    leftPressed=false;
+    rightPressed=false;
+  }
+  else if(action == "nothing"){
+     backPressed = false;
+    upPressed = false;
+    leftPressed=false;
+    rightPressed=false;
+  }
+  else{
+    backPressed = false;
+  }
+}
+
+
+
+
+
+
+
 function makeCar(carName){
 
 
@@ -14,17 +78,7 @@ function makeCar(carName){
 
 
 
-var opressed = false;
-var rightPressed = false;
-var leftPressed = false;
-var upPressed = false;
-var downPressed = false;
-var handBrake = false;
-var reset = false;
-var jump = false;
-jumptest = false;
-var boost = false;
-var mumbaidrift = false;
+
 
 
 
@@ -504,7 +558,18 @@ box.receiveShadow = true;
 
 
 
-
+chassisBody.addEventListener("collide", function(e){
+  if(e.body.name == "sphere"){
+    chassisBody.hitBall=true;
+    console.log("yaya");
+  }
+  else if(e.body.name == "Wall2" || e.body.name == "box"){
+    chassisBody.hitwall=true;
+    console.log("illegal");
+  }
+  else{console.log(e.body.name);
+  }
+});
 
 
 
