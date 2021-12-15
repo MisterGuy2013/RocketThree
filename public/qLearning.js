@@ -1,25 +1,34 @@
 function getInstantReward(){
   
-  reward = -0.01;
   if(chassisBody.hitBall == true){
     chassisBody.hitBall = false;
-    reward = 0.5;
+    reward = 5;
   }
   else if(chassisBody.hitWall == true){
     chassisBody.hitWall = false;
-    reward -= 0.5;
+    //reward -= 0.5;
   }
   if(chassisBody.scored == true){
     chassisBody.scored = false;
-    reward = 2.5;
+    reward = 25;
   }
-  if(fruitRelativePose.x<15 && fruitRelativePose.y<15){
-    reward=0.5;
+  if(Math.abs(fruitRelativePose.x)<15 && Math.abs(fruitRelativePose.y)<15){
+    reward=0.3;
   }
-  else if(fruitRelativePose.x<15 || fruitRelativePose.y<15){
+  else if(Math.abs(fruitRelativePose.x)<15 || Math.abs(fruitRelativePose.y)<15){
     reward = 0.1;
   }
   else{}
+
+  if(Math.abs(fruitRelativePose.x)<5 && Math.abs(fruitRelativePose.y)<5){
+    reward=1;
+  }
+  else if(Math.abs(fruitRelativePose.x)<5 || Math.abs(fruitRelativePose.y)<5){
+    reward = 0.3;
+  }
+  else{}
+  reward = reward - 0.1;
+  console.log(reward)
   return reward;
 }
 
@@ -69,7 +78,7 @@ var QLearning = (function () {
 
 
   var whichStateNow = function () {
-    let tileCount = 10;
+    //let tileCount = 100000;
     let player = chassisBody;
 
     let ball = sphereBody;
@@ -79,12 +88,12 @@ var QLearning = (function () {
     //let trailRelativePose = [];
 
     fruitRelativePose.x = sphereBody.position.x - chassisBody.position.x;
-    while(fruitRelativePose.x < 0) fruitRelativePose.x += tileCount;
-    while(fruitRelativePose.x > tileCount) fruitRelativePose.x -= tileCount;
+    //while(fruitRelativePose.x < 0) fruitRelativePose.x += tileCount;
+   // while(fruitRelativePose.x > tileCount) fruitRelativePose.x -= tileCount;
 
     fruitRelativePose.y = sphereBody.position.z - chassisBody.position.z;
-    while(fruitRelativePose.y < 0) fruitRelativePose.y += tileCount;
-    while(fruitRelativePose.y > tileCount) fruitRelativePose.y -= tileCount;
+   // while(fruitRelativePose.y < 0) fruitRelativePose.y += tileCount;
+    //while(fruitRelativePose.y > tileCount) fruitRelativePose.y -= tileCount;
 
     var stateName = fruitRelativePose.x + ',' + fruitRelativePose.y;
       // + ',' + trail.length;
