@@ -13,10 +13,35 @@ function getInstantReward(){
     chassisBody.scored = false;
     reward = 2.5;
   }
-  return
+  if(fruitRelativePose.x<15 && fruitRelativePose.y<15){
+    reward=0.5;
+  }
+  else if(fruitRelativePose.x<15 || fruitRelativePose.y<15){
+    reward = 0.1;
+  }
+  else{}
+  return reward;
 }
 
 
+
+
+function httpsGet(theUrl)
+{
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+    xmlHttp.send( null );
+    return xmlHttp.responseText;
+}
+
+function downloadModel(){
+  var txt = httpsGet("https://RocketThree.misterguy2013.repl.co/model.txt");
+  var json = JSON.parse(txt);
+  QLearning.qTable.import(json);
+}
+
+
+let fruitRelativePose = null;
 
 
 var QLearning = (function () {
@@ -48,7 +73,7 @@ var QLearning = (function () {
     let player = chassisBody;
 
     let ball = sphereBody;
-    let fruitRelativePose = { x:0, y:0 };
+     fruitRelativePose = { x:0, y:0 };
 
     //let trail = Snake.data.trail();
     //let trailRelativePose = [];
@@ -129,7 +154,7 @@ var QLearning = (function () {
     var currentState = whichStateNow();
     var action = bestAction(currentState);
     carAction(action);
-    var instantReward = getInstantReward;
+    var instantReward = getInstantReward();
     var nextState = whichStateNow();
 
     updateQTable(currentState, nextState, instantReward, action);
@@ -235,3 +260,9 @@ var QLearning = (function () {
   }
 
 })();
+
+
+
+QLearning.run();
+    QLearning.changeSpeed(1);
+    QLearning.changeFPS(60);
