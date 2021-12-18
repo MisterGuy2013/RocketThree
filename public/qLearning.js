@@ -1,5 +1,5 @@
 function getInstantReward(){
-  
+  var reward = 0;
   if(chassisBody.hitBall == true){
     chassisBody.hitBall = false;
     reward = 5;
@@ -12,23 +12,36 @@ function getInstantReward(){
     chassisBody.scored = false;
     reward = 25;
   }
-  if(Math.abs(fruitRelativePose.x)<15 && Math.abs(fruitRelativePose.y)<15){
+
+  var num = 15;
+  if(Math.abs(fruitRelativePose.x)<num && Math.abs(fruitRelativePose.y)<num){
     reward=0.3;
   }
-  else if(Math.abs(fruitRelativePose.x)<15 || Math.abs(fruitRelativePose.y)<15){
+  else if(Math.abs(fruitRelativePose.x)<num || Math.abs(fruitRelativePose.y)<num){
     reward = 0.1;
   }
   else{}
 
-  if(Math.abs(fruitRelativePose.x)<5 && Math.abs(fruitRelativePose.y)<5){
-    reward=1;
+  var num = 10;
+  if(Math.abs(fruitRelativePose.x)<num && Math.abs(fruitRelativePose.y)<num){
+    reward=0.5;
   }
-  else if(Math.abs(fruitRelativePose.x)<5 || Math.abs(fruitRelativePose.y)<5){
+  else if(Math.abs(fruitRelativePose.x)<num || Math.abs(fruitRelativePose.y)<num){
     reward = 0.3;
   }
   else{}
+
+  var num = 5;
+  if(Math.abs(fruitRelativePose.x)<num && Math.abs(fruitRelativePose.y)<num){
+    reward=1;
+  }
+  else if(Math.abs(fruitRelativePose.x)<num || Math.abs(fruitRelativePose.y)<num){
+    reward = 0.5;
+  }
+  else{}
+
   reward = reward - 0.1;
-  console.log(reward)
+  //console.log(reward)
   return reward;
 }
 

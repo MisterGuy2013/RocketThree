@@ -12,7 +12,8 @@ jumptest = false;
 var boost = false;
 var mumbaidrift = false;
 
-
+var engineForce = 3000,
+      maxSteerVal = 0.5, maxForce = 6000, brakeF = 10, brake = 50;
 
 
 
@@ -58,21 +59,61 @@ function carAction(action){
 }
 */
 
-function carAction(action){
-  if(action == "up"){
-    chassisBody.position.z += 1;
+function carAction(throttle, angle, precision, velocityCut, other){
+  angle = 180;
+  var euler = new THREE.Euler();
+var rotation = euler.setFromQuaternion(box.quaternion);
+var radians = rotation.y > 0 ? rotation.y : (2 * Math.PI) + rotation.y;
+var degrees = THREE.Math.radToDeg(radians);
+
+  if(throttle > 0){
+    upPressed = true;
+    downPressed = false;
   }
-  else if(action == "left"){
-    chassisBody.position.x += 1;
+  else if(throttle < 0){
+    downPressed = true;
+    upPressed = false;
   }
-  else if(action == "right"){
-    chassisBody.position.x -= 1;
+  else{
+    upPressed = false;
+    downPressed = false;
   }
-   else if(action == "down"){
-    chassisBody.position.z -= 1;
+
+  
+  //console.log("" + degrees);
+
+degree = degrees;
+angles = angle;
+angle = degrees - angles;
+degrees = (angles - degree + 180 + 360) % 360 - 180;
+
+//degrees = degree-angles;
+//Math.min(Math.abs(degree - angles), 360 - Math.abs(degree - angles));
+//degrees+=180;
+//angle = (angles - degree + 180 + 360) % 360 - 180;
+
+//console.log("degree" + degrees);
+//console.log("anlge" + angle);
+//console.log("angle" + angle);
+
+  if(degrees >= -precision && degrees<=precision){
+    leftPressed = false;
+    rightPressed = false;
+    
+    
   }
-   else if(action == "nothing"){
-   
+  else if(degrees > precision && degrees< 180){
+    chassisBody.angularVelocity.y = chassisBody.angularVelocity.y/velocityCut;
+    leftPressed = true;
+    rightPressed = false;
+  }
+  else if(degrees < -precision && degrees>  -180){
+    chassisBody.angularVelocity.y = chassisBody.angularVelocity.y/velocityCut;
+    rightPressed = true;
+    leftPressed = false;
+  }
+  else{
+    console.log("e")
   }
 }
 
@@ -182,8 +223,7 @@ function keyUpHandler(event) {
         mumbaidrift = false;
     }
 }
-var engineForce = 3000,
-      maxSteerVal = 0.5, maxForce = 6000, brakeF = 10, brake = 50;
+
 
 
 var drift = false

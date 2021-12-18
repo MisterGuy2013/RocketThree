@@ -1,10 +1,11 @@
+var wallREF = null;
 function makeArena(){
 function makeSideWalls(){
 
 
 
 /// Making the side walls
-var wall = new CANNON.Body({
+wallREF = new CANNON.Body({
 friction: 5,
    restitution: 0.3,
    contactEquationStiffness: 1e8,
@@ -14,10 +15,10 @@ friction: 5,
    mass: 0, // kg
    position: new CANNON.Vec3(50, 0, 0), // m
    shape: new CANNON.Box(new CANNON.Vec3(10,50,100)),
-   name: "Wall1"
+   name: "WallREF"
 })
-world.add(wall);
-helper.addVisual(wall, "box", wallMaterial);
+world.add(wallREF);
+helper.addVisual(wallREF, "box", wallMaterial);
 
 var wall = new CANNON.Body({
 friction: 5,

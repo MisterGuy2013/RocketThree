@@ -415,7 +415,7 @@ function updatePhysics() {
 
 
 
-  //world.step(1/60);
+  world.step(1/60);
 
 
 
@@ -540,7 +540,7 @@ else if(params.cameraLookAt == "Ball"){
 
 
 
-
+box.lookAt(parent.position);
 	requestAnimationFrame( animate );
 	
   
