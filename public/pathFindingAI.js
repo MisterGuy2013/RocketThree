@@ -11,11 +11,12 @@ function eulerToDegrees(e){
   return degrees
 }
 function runPathFinding(){
-    var qrot = new THREE.Quaternion();
-  qrot.setFromUnitVectors(box.position,parent.position);
+  probe.position.copy(chassisBody.position);
+  probe.lookAt(parent.position);
   
   //console.log(euler);
-  var degrees = eulerToDegrees(qrot);
-  console.log(degrees);
+  var degrees = eulerToDegrees(probe.quaternion);
+  
+  //console.log(degrees);
   carAction(100,degrees,10,3);
 }

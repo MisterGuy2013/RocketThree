@@ -60,12 +60,11 @@ function carAction(action){
 */
 
 function carAction(throttle, angle, precision, velocityCut, other){
-  angle = 180;
   var euler = new THREE.Euler();
 var rotation = euler.setFromQuaternion(box.quaternion);
 var radians = rotation.y > 0 ? rotation.y : (2 * Math.PI) + rotation.y;
 var degrees = THREE.Math.radToDeg(radians);
-
+/*
   if(throttle > 0){
     upPressed = true;
     downPressed = false;
@@ -77,25 +76,41 @@ var degrees = THREE.Math.radToDeg(radians);
   else{
     upPressed = false;
     downPressed = false;
-  }
+  }*/
 
   
   //console.log("" + degrees);
 
 degree = degrees;
 angles = angle;
-angle = degrees - angles;
-degrees = (angles - degree + 180 + 360) % 360 - 180;
+//angle = degrees - angles;
+
+
+a = degree;
+b = angles;
+
+var d = Math.abs(a - b) % 360; 
+var degrees = d > 180 ? 360 - d : d;
+
+//calculate sign 
+ sign = (a - b >= 0 && a - b <= 180) || (a - b <=-180 && a- b>= -360) ? 1 : -1; 
+degrees *= sign;
+
+
+//degrees = (degree - angles + 180 + 360) % 360 - 180;
+
 
 //degrees = degree-angles;
 //Math.min(Math.abs(degree - angles), 360 - Math.abs(degree - angles));
 //degrees+=180;
 //angle = (angles - degree + 180 + 360) % 360 - 180;
 
-//console.log("degree" + degrees);
+
 //console.log("anlge" + angle);
 //console.log("angle" + angle);
 
+consolelog("degrees:" + degrees + "<br> a:" + a + "<br> b:" + b);
+/*
   if(degrees >= -precision && degrees<=precision){
     leftPressed = false;
     rightPressed = false;
@@ -114,7 +129,7 @@ degrees = (angles - degree + 180 + 360) % 360 - 180;
   }
   else{
     console.log("e")
-  }
+  }*/
 }
 
 

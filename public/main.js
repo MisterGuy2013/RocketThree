@@ -20,7 +20,9 @@ wallTexture.encoding = THREE.sRGBEncoding;
 var wallMaterial = new THREE.MeshStandardMaterial( { map: wallTexture } );
 
 
-
+function consolelog(e){
+  document.getElementById("illegal").innerHTML = e;
+}
 
 
 var params = {
@@ -30,7 +32,7 @@ var params = {
                 blueScore:0,
                 orangeScore:0,
                 cameraFollow:"Chase",
-                cameraLookAt:"Car"
+                cameraLookAt:"Ball"
             };
 
 
@@ -353,9 +355,21 @@ function score(goal){
 }
 
 
+/*
+function makeProbe(){
+  ///used for finding pathfinding angle
+  var geometry = new THREE.BoxGeometry();
+var material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+var probe = new THREE.Mesh( geometry, material );
+probe.transparent = true;
+return probe;
+}
 
 
 //try{
+
+var probe = makeProbe()
+//scene.add(probe);*/
 
 var jumptest = false;
 var planeBody = undefined;
@@ -463,6 +477,8 @@ function animate() {
      //camera time
 direction = new CANNON.Vec3();
 if(params.cameraFollow == "Chase"){
+  params.cameraLookAt="Car";
+  
 directionVadd = new CANNON.Vec3(0,1.5,-7);
 var newpos = new CANNON.Vec3(chassisBody.position.x, chassisBody.position.y, chassisBody.position.z);
 chassisBody.quaternion.vmult(directionVadd, directionVadd);
@@ -486,6 +502,7 @@ direction.mult(fixedSpeed,cameraBody.velocity);
       camera.position.y = -4.15
     }}
     else if(params.cameraFollow == "Ball Camera"){
+      params.cameraLookAt="Ball";
   /*
   math class finally helped, 
   y = mx + b 
@@ -498,24 +515,18 @@ direction.mult(fixedSpeed,cameraBody.velocity);
   so get m and b, 
   get 
   */
-  var cameraDistance = 2;
   var slope = (box.position.z-parent.position.z)/(box.position.x-parent.position.x);
   var intercept = (-slope * box.position.x) + box.position.z;
-  var slopeInverse = 1/slope;
-  var multiplicationVar = cameraDistance/slopeInverse;
-  var x = box.position.x + multiplicationVar;
-  var z = box.position.z + slope*multiplicationVar
-  var cameraDistance = 2;
-  var slope = (box.position.z-parent.position.z)/(box.position.x-parent.position.x);
-  var intercept = (-slope * box.position.x) + box.position.z;
-  var slopeInverse = 1/slope;
-  var multiplicationVar = cameraDistance/slopeInverse;
-  var x = box.position.x + 2;
-  var z = slope*(box.position.x+2) + intercept;
-
+  var distance = 5;
+  var positive = box.position.x + (Math.sqrt((distance * distance)));
+  var negative = box.position.x - (Math.sqrt((distance * distance)));
+  var difference = (box.position.x-positive)-(parent.position.x-positive);
+  var aORb = difference*(1/Math.abs(difference));
+  var x = box.position.x + aORb * (Math.sqrt((distance * distance)/(1 + (slope*slope))));
 
   
-  cameraBody.position.set(x, -3, z);
+  var z = (slope*x) + intercept;
+  cameraBody.position.set(x, box.position.y+1.25, z);
   camera.position.copy(cameraBody.position);
 }
 if(params.cameraFollow == "Normal"){
@@ -540,7 +551,7 @@ else if(params.cameraLookAt == "Ball"){
 
 
 
-box.lookAt(parent.position);
+//box.lookAt(parent.position);
 	requestAnimationFrame( animate );
 	
   
